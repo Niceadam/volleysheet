@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "volleysheet",
+  "outputfilename": "volleysheet",
+  "frontend:install": "pnpm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "wailsjsdir": "./frontend/src/lib",
+  "author": {
+    "name": "Niceadam",
+    "email": "adam.asaad76@gmail.com"
+  }
+}

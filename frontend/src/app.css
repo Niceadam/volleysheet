@@ -1,0 +1,25 @@
+/* Write your global styles here, in PostCSS syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-team {
+  @apply btn;
+  @apply text-white;
+  @apply text-xl;
+  @apply border-none;
+}
+
+.btn-primary {
+  @apply btn-team;
+  @apply bg-primary;
+  @apply hover:bg-primary-hover;
+  @apply disabled:bg-primary-light;
+}
+
+.btn-secondary {
+  @apply btn-team;
+  @apply bg-secondary;
+  @apply hover:bg-secondary-hover;
+  @apply disabled:bg-secondary-light;
+}
