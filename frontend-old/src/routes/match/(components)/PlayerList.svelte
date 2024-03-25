@@ -18,7 +18,6 @@
 		rowData: {},
 		// Column Definitions: Defines the columns to be displayed.
 		columnDefs: [
-			{ field: 'team', hide: true },
 			{ field: 'number', resizable: false, width: 90 },
 			{ field: 'name', resizable: false, flex: 1 },
 			{ field: 'type', resizable: false, width: 70 }
@@ -29,16 +28,13 @@
 	export let orientation: boolean;
 
 	let benchApi;
-	function initBench(node) {
+	function initBench(node: HTMLElement) {
 		gridOptions.rowData = $benchData[team];
-		gridOptions.columnDefs[1].dndSource = true;
-		benchApi = createGrid(node, gridOptions);
 	}
 
 	let courtApi;
-	function initCourt(node) {
+	function initCourt(node: HTMLElement) {
 		gridOptions.rowData = $courtData[team];
-		gridOptions.columnDefs[1].dndSource = false;
 		courtApi = createGrid(node, gridOptions);
 	}
 </script>

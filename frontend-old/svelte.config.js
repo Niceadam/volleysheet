@@ -1,5 +1,5 @@
 import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -19,6 +19,7 @@ const config = {
     }),
 
     alias: {
+      '@': './src',
       "@wailsjs": './src/lib/wailsjs/go/main/App.js'
     }
   }

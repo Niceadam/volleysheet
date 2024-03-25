@@ -1,0 +1,39 @@
+/* Write your global styles here, in PostCSS syntax */
+@import 'ag-grid-community/styles/ag-grid.css';
+@import "ag-grid-community/styles/ag-theme-quartz.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ag-theme-quartz {
+  --ag-border-radius: 0;
+}
+
+.btn {
+  @apply no-animation;
+  @apply shadow-md;
+}
+
+.btn-red {
+  @apply bg-red-700;
+  @apply hover:bg-red-600;
+}
+
+.modal-box {
+  @apply rounded-none;
+  @apply pb-4;
+}
+
+.modal-action {
+  @apply justify-center
+}
+
+.radial-progress.radial-square::before {
+  background: conic-gradient(currentColor calc(var(--value) * 1%), #0000 0);
+}
+
+.radial-progress.radial-square::after {
+  inset: unset;
+}
+
