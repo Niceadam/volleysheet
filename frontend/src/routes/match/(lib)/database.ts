@@ -21,32 +21,20 @@ export async function initMatch() {
     return names
   })
 
-  for (let i = 0; i < 2; i++) {
-    court.update(court => {
-      court[i] = data[i].players.slice(0, 6)
-      return court
-    })
-    bench.update(bench => {
-      bench[i] = data[i].players.slice(6)
-      return bench
-    })
-  }
+  bench.update(bench => {
+    bench[0] = data[0].players
+    bench[1] = data[1].players
 
-  court.update(court => {
     // Assign random Libero + Captain
-    court[0][5].libero = true
-    court[0][5].sub = 0
+    bench[0][5].libero = true
+    bench[0][5].sub = 0
 
-    court[1][0].libero = true
-    court[1][0].sub = 0
+    bench[1][0].libero = true
+    bench[1][0].sub = 0
 
-    court[0][0].captain = true
-    court[1][0].captain = true
+    bench[0][0].captain = true
+    bench[1][2].captain = true
 
-    // Random Subs
-    court[0][2].sub = 1
-
-    return court
+    return bench
   })
-
 }

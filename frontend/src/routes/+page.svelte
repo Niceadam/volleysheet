@@ -4,4 +4,4 @@
   goto("/match");
 </script>
 
-<h1>Main Page</h1>
+<h1>Welcome to VolleySheet</h1>

@@ -12,33 +12,47 @@ import { goto } from '$app/navigation'
 
 export function callTimeOut(team: number) {
   state.set("timeOut");
-  teamState.update(state => {
-    state.timeOuts[team]++
-    return state
+  teamState.timeOuts.update((val) => {
+    val[team]++
+    return val
   })
 }
 
-export function getSubOptions(select: Player, team: number) {
-  let subsOnBench: number[];
-  let subOptions: Player[];
-  let bencht: Player[] = get(bench)[team]
-  let courtt: Player[] = get(court)[team]
+export function getCourtSubOptions(team: number, liberoSub: boolean) {
+  const courtt = get(court)[team]
 
-  subsOnBench = courtt
-    .filter((player: Player) => (player.sub !== undefined) && !player.libero)
-    .map((player: Player) => player.sub);
+  if (liberoSub) {
+    // Allow libero sub only in backrow
+    let options = courtt.slice(4, 6);
+    if (get(score.serve) != team) {
+      // Libero cannot serve
+      options.push(courtt[0]);
+    }
+    return options
+  } else {
+    return courtt.filter(
+      (player: Player) => !player.libero && !player.doneSub,
+    );
+  }
+}
+
+export function getBenchSubOptions(select: Player, team: number, liberoSub: boolean) {
+  const bencht = get(bench)[team]
+
+  if (liberoSub) {
+    // All liberos on bench
+    return bencht.filter((player: Player) => player.libero);
+  }
 
   if (select.sub !== undefined) {
     // Player is already substituted, one option to sub back
-    subOptions = [bencht[select.sub]];
+    return [bencht[select.sub]];
   } else {
-    // Anyone can sub in, except libero and subs
-    subOptions = bencht.filter((player: Player, idx: number) =>
-      !player.libero && !subsOnBench.includes(idx)
+    // First sub: Can sub out for anyone, except libero and starters
+    return bencht.filter((player: Player) =>
+      !player.libero && !player.starter
     );
   }
-
-  return subOptions
 }
 
 export function liberoOut(team: number) {
@@ -46,11 +60,6 @@ export function liberoOut(team: number) {
   let playerIn = get(bench)[team][libero.sub]
 
   callSubs(team, libero, playerIn)
-
-  teamState.update(state => {
-    state.liberoIn[team] = false
-    return state
-  })
 
   modal.set({
     type: "liberoExit",
@@ -76,33 +85,42 @@ export function callSubs(team: number, courtPlayer: Player, benchPlayer: Player)
     benchPlayer.sub = benchIdx
   }
 
+  // Substitute
   bench.update((bench) => {
     delete courtPlayer.sub
     bench[team][benchIdx] = courtPlayer
     return bench
   })
-
   court.update((court) => {
     court[team][courtIdx] = benchPlayer
     return court
   })
 
-  teamState.update(state => {
-    if (!liberoSub) {
-      state.subCount[team]++
-    } else {
-      state.doneLibero[team] = true
-    }
-    return state
-  })
+  // Update sub + libero counts
+  if (liberoSub) {
+    teamState.liberoIn.update((val) => {
+      val[team] = (benchPlayer.libero === true)
+      return val
+    })
+    teamState.doneLibero.update((val) => {
+      val[team] = true
+      return val
+    })
+  } else {
+    teamState.subCount.update((val) => {
+      val[team]++
+      return val
+    })
+  }
 }
 
 export function scorePoint(team: number) {
-  score.update(score => {
-    score.points[team]++
-    score.serve = team
-    return score
+  score.serve.set(team)
+  score.points.update(val => {
+    val[team]++
+    return val
   });
+
 
   // Rotate
   court.update(court => {
@@ -111,11 +129,7 @@ export function scorePoint(team: number) {
   })
 
   // Allow libero sub again
-  teamState.update(state => {
-    state.doneLibero = [false, false]
-    return state
-  })
-
+  teamState.doneLibero.set([false, false])
 
   // Check mandatory libero exit
   let player3 = get(court)[team][3];
@@ -124,7 +138,7 @@ export function scorePoint(team: number) {
   }
 
   // Check if set won
-  const currScore = get(score).points;
+  const currScore = get(score.points);
   const setWon = (currScore[team] >= 4) && (currScore[team] - currScore[1 - team] >= 2)
   if (setWon) {
     state.set("endSet");
@@ -133,28 +147,56 @@ export function scorePoint(team: number) {
   }
 }
 
+export function confirmLineUp() {
+  court.update(court => {
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 6; j++) {
+        if (court[i][j] === null)
+          // Court is not full yet
+          return court
+      }
+    }
+
+    bench.update(bench => {
+      for (let i = 0; i < 2; i++) {
+        // Remove chosen players from bench
+        court[i].forEach((val) => {
+          const idx = bench[i].indexOf(val)
+          bench[i].splice(idx, 1)
+        })
+
+        // Mark original linup
+        for (let j = 0; j < 6; j++) {
+          court[i][j].starter = true
+        }
+      }
+      return bench
+    })
+
+    state.set("beforeRally")
+    return court
+  })
+}
+
+
 export function endSet() {
-  const currSet = get(score).sets
-  const currScore = get(score).points;
+  const currScore = get(score.points);
   const winTeam = +(currScore[1] > currScore[0])
 
-  score.update(score => {
-    score.points = [0, 0]
-    score.sets[winTeam]++
-    return score
-  })
+  teamState.timeOuts.set([0, 0])
+  teamState.subCount.set([0, 0])
 
-  teamState.update(state => {
-    state.timeOuts = [0, 0]
-    state.subCount = [0, 0]
-    return state
-  })
+  score.points.set([0, 0])
+  score.sets.update(val => {
+    val[winTeam]++
 
-  // Check if match won
-  const matchWon = (currSet[winTeam] == 2)
-  if (matchWon) {
-    goto("/match/results")
-  } else {
-    state.set("beforeRally")
-  }
+    // Check if match won
+    if (val[winTeam] == 2) {
+      goto("/match/results")
+    } else {
+      state.set("beforeRally")
+    }
+
+    return val
+  })
 }

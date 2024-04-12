@@ -9,43 +9,47 @@
   import SubModal from "./(components)/(modals)/SubModal.svelte";
   import ExceptionModal from "./(components)/(modals)/ExceptionModal.svelte";
   import LiberoExitModal from "./(components)/(modals)/LiberoExitModal.svelte";
-  import LineupsModal from "./(components)/(modals)/LineupsModal.svelte";
+  import { teamState } from "./stores";
+
+  const { side } = teamState;
 
   let initPromise = initMatch();
-
-  const flip = false;
 </script>
 
 <div class="h-screen grid grid-cols-4 bg-slate-200 text-center">
   {#await initPromise}
     <!-- Skeleton -->
-    <div class="col-span-3 flex justify-center items-center">
+    <div class="col-span-4 flex justify-center items-center">
       <h1 class="font-bold text-3xl mr-3">Starting Match</h1>
       <span class="loading loading-bars loading-lg"></span>
     </div>
-    <div class="skeleton"></div>
   {:then}
-    <div class="col-span-3 grid grid-cols-3 px-4 py-6 space-x-4">
+    <div class="col-span-3 grid grid-cols-3 px-4 py-6 gap-4">
       <!-- Team 1 -->
-      <Team team={0} />
+      <div class:order-last={$side}>
+        <Team team={0} />
+      </div>
 
       <div class="flex flex-col justify-between">
         <!-- Score Board -->
         <!-- Court -->
         <!-- Buttons-->
         <ScoreBoard />
-        <Court {flip} />
-        <Actions />
+        <Court />
+        <div class="h-1/3">
+          <Actions />
+        </div>
       </div>
 
       <!-- Team 2 -->
-      <Team team={1} />
+      <div class:order-first={$side}>
+        <Team team={1} />
+      </div>
     </div>
 
     <LiberoExitModal />
     <SubModal />
     <SubModal liberoModal />
-    <LineupsModal />
     <ExceptionModal />
 
     <!-- History -->

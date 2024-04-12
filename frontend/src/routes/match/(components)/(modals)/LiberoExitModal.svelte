@@ -26,7 +26,7 @@
 
       <div class="flex flex-col space-y-2 items-center">
         <!-- Player 1 -->
-        <div class="flex flex-col border overflow-x-auto w-4/5">
+        <div class="flex border overflow-x-auto w-4/5">
           <table class="table">
             <tbody>
               <tr class="hover:bg-slate-300">
@@ -41,7 +41,7 @@
         <ExchangeIcon />
 
         <!-- Player 2 -->
-        <div class="flex flex-col border overflow-x-auto w-4/5">
+        <div class="flex border overflow-x-auto w-4/5">
           <table class="table">
             <tbody>
               <tr class="hover:bg-slate-300">
@@ -56,7 +56,7 @@
 
       <div class="modal-action">
         <form method="dialog">
-          <button class="btn btn-primary">Done</button>
+          <button>Done</button>
         </form>
       </div>
     </div>
@@ -64,7 +64,10 @@
 </dialog>
 
 <style lang="postcss">
-  .btn {
+  button {
     @apply text-sm;
+    @apply btn;
+    @apply btn-primary;
   }
 </style>
+

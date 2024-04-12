@@ -3,17 +3,27 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --primary: #A40000;
+    --secondary: #003A6D;
+    --primary-light: #F9F1F3;
+    --secondary-light: #F1F6F8;
+    --primary-hover: #B51111;
+    --secondary-hover: #114B7E;
+  }
+}
+
 .btn-team {
-  @apply btn;
   @apply text-white;
-  @apply text-xl;
   @apply border-none;
 }
 
 .btn-primary {
   @apply btn-team;
   @apply bg-primary;
-  @apply hover:bg-primary-hover;
+  @apply hover:bg-primary;
+  @apply hover:opacity-80;
   @apply disabled:bg-primary-light;
 }
 

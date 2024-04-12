@@ -5,26 +5,37 @@ export interface Player {
   name: string,
   libero?: boolean,
   captain?: boolean,
+  starter?: boolean // is in starting line up of set
   sub?: number // index in bench array of sub
   doneSub?: boolean // Player already subbed in and out
 }
 
-export const score = writable({
-  serve: 0,
-  points: [0, 0],
-  sets: [0, 0]
-})
+// ex. getColor("btn", 0, "light") => btn-primary-light
+export const colors = ["primary", "secondary"]
+export function getColor(team: number) {
+  return (team == 0) ? "primary" : "secondary"
+};
 
-export const teamState = writable({
-  timeOuts: [0, 0],
-  subCount: [0, 0],
-  liberoIn: [true, true],
-  doneLibero: [false, false]
-})
+export const score = {
+  serve: writable(0),
+  points: writable([0, 0]),
+  sets: writable([0, 0]),
+}
+
+export const teamState = {
+  side: writable(false),
+  timeOuts: writable([0, 0]),
+  subCount: writable([0, 0]),
+  liberoIn: writable([false, false]),
+  doneLibero: writable([false, false]),
+}
 
 export const teamNames = writable(Array(2))
-export const court: Writable<Player[][]> = writable([[], []])
 export const bench: Writable<Player[][]> = writable([[], []])
+export const court: Writable<Player[][]> = writable([
+  Array(6).fill(null),
+  Array(6).fill(null),
+])
 
 export const timeOut = writable(false)
 
@@ -52,5 +63,14 @@ export type Modal = {
 }
 
 export const modal: Writable<Modal> = writable({ type: "none" })
+export const lineupSelect = [writable(null), writable(null)]
 
 // ----------------------------------------
+
+type History = {
+  action: string
+  data: object
+  score: number[]
+}
+
+export const history: Writable<History> = writable([])
